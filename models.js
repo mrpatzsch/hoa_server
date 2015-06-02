@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 
-mongoose.connect("mongodb://localhost/houses");
+mongoose.connect("mongodb://localhost/associations");
 
 var houseSchema = new mongoose.Schema({
   address: {
@@ -26,7 +26,6 @@ var associationSchema = new mongoose.Schema({
 });
 
 
-var House = mongoose.model("House", houseSchema);
 var Association = mongoose.model("Association", associationSchema);
 
-module.exports.House = House;
+module.exports.Association = Association;
