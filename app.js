@@ -9,6 +9,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json'}));
 
+process.env.MONGOLAB_URI
+
 
 app.get('/protected',
   jwt({secret: 'shhhhhhared-secret'}),
@@ -71,13 +73,19 @@ app.get("/associations/:name", function(req, res) {
   });
 });
 
-app.put("/associations/:name/violation", function(req, res) {
+app.post("/associations/:name/violation", function(req, res) {
+  var name = req.params.name;
+  var add = req.body.address;
+  var st = req.body.street;
   db.Association.findOne({name: name}, function(err, association) {
-    association.violations += 1;
-    association.save(function(err) {
-      if(err) return res.send(err) 
-        console.log("Violation Added");
-        res.send(association);
+    association.houses.findOne({address: add, street: st}, function(err, house) {
+      console.log(house);
+      house.association += 1;
+        association.save(function(err) {
+          if(err) return res.send(err) 
+          console.log("Violation Added");
+          res.send(association);
+      });
     });
   });
 });
