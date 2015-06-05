@@ -71,6 +71,17 @@ app.get("/associations/:name", function(req, res) {
   });
 });
 
+app.put("/associations/:name/violation", function(req, res) {
+  db.Association.findOne({name: name}, function(err, association) {
+    association.violations += 1;
+    association.save(function(err) {
+      if(err) return res.send(err) 
+        console.log("Violation Added");
+        res.send(association);
+    });
+  });
+});
+
 app.post("/associations/:name", function(req, res) {
   var name = req.params.name;
   var add = req.body.address;
