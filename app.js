@@ -2,6 +2,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     db = require('./models'),
     session = require("express-session"),
+    jwt = require('express-jwt'),
     app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -9,6 +10,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json'}));
 
 
+app.get('/protected',
+  jwt({secret: 'shhhhhhared-secret'}),
+  function(req, res) {
+    if (!req.user.admin) return res.send(401);
+    res.send(200);
+  });
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -16,19 +23,20 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(session({
-  secret: 'super secret',
-  resave: false,
-  saveUnitialized: true
-}))
-
 app.get("/signup", function(req, res) {
 });
 
-app.post("/users", function(req, res) {
-  var user = req.body.user;
+app.get('/users', function(req, res) {
+  db.User.find({}, function(err, user) {
+    res.send(user);
+  });
+});
 
-  db.User.createSecure(user.username, user.email, user.password, function() {
+app.post("/user/new", function(req, res) {
+  var user = req.body;
+  console.log(user);
+  db.User.createSecure(user.email, user.password, function(err, user) {
+    console.log("Success!", user);
   });
 });
 
@@ -58,7 +66,7 @@ app.get("/associations", function(req, res) {
 app.get("/associations/:name", function(req, res) {
   var id = req.params.id;
   var name = req.params.name;
-  db.Association.find({name: name}, function(err, association) {
+  db.Association.findOne({name: name}, function(err, association) {
     res.send(association);
   });
 });
@@ -68,14 +76,13 @@ app.post("/associations/:name", function(req, res) {
   var add = req.body.address;
   var st = req.body.street;
   console.log(add, st);
-  db.Association.find({name: name}, function(err, association) {
-    association[0].houses.push({address: add, street: st});
-    if(association[0].houses[houses.length -1].isNew) {
-        association[0].save(function(err) {
-          if (err) return handleError(err)
-            console.log("Success!");
-        });
-      };
+  db.Association.findOne({name: name}, function(err, association) {
+    association.houses.push({address: add, street: st});
+      association.save(function(err) {
+        if (err) return res.send(err)
+        console.log("Success!");
+        res.send(association);
+      });
   });
 });
 
