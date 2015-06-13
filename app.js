@@ -19,17 +19,29 @@ app.get('/protected',
     res.send(200);
   });
 
+app.use(jwt({secret: 'shhhhhhared-secret'}).unless({path: ['/token']}));
+
+app.use(jwt({
+  secret: 'hello world !',
+  credentialsRequired: false,
+  getToken: function fromHeaderOrQuerystring(req) {
+    if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+      return req.headers.authorization.split(' ')[1];
+    } else if (req.query && req.query.token) {
+      return req.query.token;
+    }
+    return null;
+  }
+}));
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
-app.get("/signup", function(req, res) {
-});
-
 app.get('/users', function(req, res) {
-  db.User.find({}, function(err, user) {
+  User.find({}, function(err, user) {
     res.send(user);
   });
 });
@@ -37,65 +49,89 @@ app.get('/users', function(req, res) {
 app.post("/user/new", function(req, res) {
   var user = req.body;
   console.log(user);
-  db.User.createSecure(user.email, user.password, function(err, user) {
+  User.createSecure(user.email, user.password, function(err, user) {
+    if(err) res.send(err);
     console.log("Success!", user);
   });
 });
 
 app.post("/login", function(req, res) {
   var user = req.body.user;
-
-  db.User.authenticate(user.email, user.password,
+  User.authenticate(user.email, user.password,
     function(err, user) {
       res.send(user);
     });
 });
 
-app.get("/houses", function(req, res) {
-  db.House.find({},
-    function(err, houses) {
-      res.send(houses);
-    });
-});
 
+//Get Associations List 
 app.get("/associations", function(req, res) {
-  db.Association.find({},
+  Association.find({},
     function(err, associations) {
       res.send(associations);
     });
 });
 
+//Get Specific Association with "name"
 app.get("/associations/:name", function(req, res) {
   var id = req.params.id;
   var name = req.params.name;
-  db.Association.findOne({name: name}, function(err, association) {
+  Association.findOne({name: name}, function(err, association) {
     res.send(association);
   });
 });
 
-app.post("/associations/:name/violation", function(req, res) {
+//Get Specific House with association name and house ID 
+app.get("/associations/:name/house/:id", function(req, res) {
   var name = req.params.name;
-  var add = req.body.address;
-  var st = req.body.street;
-  db.Association.findOne({name: name}, function(err, association) {
-    association.houses.findOne({address: add, street: st}, function(err, house) {
-      console.log(house);
-      house.association += 1;
-        association.save(function(err) {
-          if(err) return res.send(err) 
-          console.log("Violation Added");
-          res.send(association);
-      });
-    });
+  var id = req.params.id;
+  Association.findOne({name: name}, function(err, association) {
+    var houseId = association.houses.id(id);
+    res.send(houseId);
   });
 });
 
+//Get Specific Violation with association name, house ID, and violation ID
+app.get("/associations/:name/house/:houseId/violation/:violationId", function(req, res) {
+  var name = req.params.name;
+  var id = req.params.houseId
+  var violation = req.params.violationId;
+  Association.findOne({name: name}, function(err, association) {
+    var houseId = association.houses.id(id);
+    var violationId = association.houses.id(id).violations.id(violation);
+    res.send(violationId);
+  });
+});
+
+// app.post("/associations/:name/violation/new", function(req, res) {
+//   var name = req.params.name;
+//   var add = req.body.address;
+//   var st = req.body.street;
+//   Association.findOne({name: name}, function(err, association) {
+//     association.houses.findOne({address: add, street: st}, function(err, house) {
+//       console.log(house);
+//       house.violations.push({violationInfo: info});
+//         association.save(function(err) {
+//           if(err) return res.send(err) 
+//           console.log("Violation Added");
+//           res.send(association);
+//       });
+//     });
+//   });
+// });
+
+app.post("/associations/new", function(req, res) {
+  var newName = req.body.name;
+  Association.create({name: newName});
+})
+
+//Post new House to association with Name 
 app.post("/associations/:name", function(req, res) {
   var name = req.params.name;
   var add = req.body.address;
   var st = req.body.street;
   console.log(add, st);
-  db.Association.findOne({name: name}, function(err, association) {
+  Association.findOne({name: name}, function(err, association) {
     association.houses.push({address: add, street: st});
       association.save(function(err) {
         if (err) return res.send(err)
