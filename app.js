@@ -2,7 +2,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     db = require('./models'),
     session = require("express-session"),
-    jwt = require('express-jwt'),
+    // jwt = require('express-jwt'),
     app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -12,27 +12,27 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json'}));
 process.env.MONGOLAB_URI
 
 
-app.get('/protected',
-  jwt({secret: 'shhhhhhared-secret'}),
-  function(req, res) {
-    if (!req.user.admin) return res.send(401);
-    res.send(200);
-  });
+// app.get('/protected',
+//   jwt({secret: 'shhhhhhared-secret'}),
+//   function(req, res) {
+//     if (!req.user.admin) return res.send(401);
+//     res.send(200);
+//   });
 
-app.use(jwt({secret: 'shhhhhhared-secret'}).unless({path: ['/token']}));
+// app.use(jwt({secret: 'shhhhhhared-secret'}).unless({path: ['/token']}));
 
-app.use(jwt({
-  secret: 'hello world !',
-  credentialsRequired: false,
-  getToken: function fromHeaderOrQuerystring(req) {
-    if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-      return req.headers.authorization.split(' ')[1];
-    } else if (req.query && req.query.token) {
-      return req.query.token;
-    }
-    return null;
-  }
-}));
+// app.use(jwt({
+//   secret: 'hello world !',
+//   credentialsRequired: false,
+//   getToken: function fromHeaderOrQuerystring(req) {
+//     if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+//       return req.headers.authorization.split(' ')[1];
+//     } else if (req.query && req.query.token) {
+//       return req.query.token;
+//     }
+//     return null;
+//   }
+// }));
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
