@@ -65,7 +65,7 @@ app.post("/login", function(req, res) {
 
 
 //Get Associations List 
-app.get("/associations", function(req, res) {
+app.get("/", function(req, res) {
   Association.find({},
     function(err, associations) {
       res.send(associations);
