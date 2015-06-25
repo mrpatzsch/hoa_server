@@ -10,7 +10,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json'}));
 
-mongoose.connect(process.env.MONGOLAB_URI);
 
 // app.get('/protected',
 //   jwt({secret: 'shhhhhhared-secret'}),
@@ -188,6 +187,6 @@ app.post("/associations/:name", function(req, res) {
 // });
 
 
-app.listen(process.env.PORT || 3000, function() {
+app.listen(process.env.MONGOLAB_URI || 3000, function() {
   console.log("Server running");
 });
