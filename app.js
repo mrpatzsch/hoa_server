@@ -1,7 +1,7 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
     db = require('./models'),
-    users = require('./models/user'),
+    users = require('./user'),
     session = require("express-session"),
     jwt = require('express-jwt'),
     app = express();
