@@ -187,6 +187,6 @@ app.post("/associations/:name", function(req, res) {
 // });
 
 
-app.listen(process.env.MONGOLAB_URI || 3000, function() {
+app.listen(process.env.PORT || 3000, function() {
   console.log("Server running");
 });
