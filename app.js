@@ -10,8 +10,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json'}));
 
-process.env.MONGOLAB_URI
-
+mongoose.connect(process.env.MONGOLAB_URI)
 
 // app.get('/protected',
 //   jwt({secret: 'shhhhhhared-secret'}),
@@ -38,7 +37,7 @@ process.env.MONGOLAB_URI
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8100');
+    res.setHeader('Access-Control-Allow-Origin', 'http://hoa-front.herokuapp.com');
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
