@@ -1,9 +1,6 @@
 var mongoose = require('mongoose');
 
-mongoose.connect(mongoose.connect(process.env.MONGOLAB_URI)
-, function(){
-  console.log('Connected!');
-});
+mongoose.connect('mongodb://localhost/associations') || mongoose.connect(process.env.MONGOLAB_URI);
 
 var violationSchema = new mongoose.Schema({
   violationInfo: String,
