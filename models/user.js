@@ -2,7 +2,7 @@ var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(10);
 var mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGOLAB_URI) || mongoose.connect('mongodb://localhost/associations');
+mongoose.createConnection(process.env.MONGOLAB_URI) || mongoose.connect('mongodb://localhost/g');
 
 
 var violationSchema = new mongoose.Schema({
