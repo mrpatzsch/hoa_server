@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/associations', function(){
+mongoose.connect(mongoose.connect(process.env.MONGOLAB_URI)
+, function(){
   console.log('Connected!');
 });
 
