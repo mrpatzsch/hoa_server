@@ -1,8 +1,9 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
     db = require('./models'),
+    users = require('./models/user'),
     session = require("express-session"),
-    // jwt = require('express-jwt'),
+    jwt = require('express-jwt'),
     app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -34,43 +35,68 @@ process.env.MONGOLAB_URI
 //   }
 // }));
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8100');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
+
+app.get('/', function(req, res) {
+  res.send("IT'S WORKING");
 });
 
 app.get('/users', function(req, res) {
-  User.find({}, function(err, user) {
+  users.find({}, function(err, user) {
     res.send(user);
   });
 });
 
 app.post("/user/new", function(req, res) {
   var user = req.body;
-  console.log(user);
-  User.createSecure(user.email, user.password, function(err, user) {
+  users.createSecure(user.username, user.email, user.passwordDigest, user.companyName, user.address, user.address2, user.city, user.state, user.zipcode, user.tel, function(err, user) {
     if(err) res.send(err);
     console.log("Success!", user);
+    res.send(user);
   });
 });
 
 app.post("/login", function(req, res) {
-  var user = req.body.user;
-  User.authenticate(user.email, user.password,
+  var user = req.body;
+  users.authenticate(user.email, user.password,
     function(err, user) {
+      if(err) return res.send(err);
       res.send(user);
     });
 });
 
 
 //Get Associations List 
-app.get("/", function(req, res) {
+app.get("/associations", function(req, res) {
   Association.find({},
     function(err, associations) {
       res.send(associations);
     });
 });
+
+app.get('/user/associations', function(req, res) {
+  var user = req.body;
+  users.find({name: user.name}, function(err, user) {
+    res.send(user.associations);
+  })
+})
 
 //Get Specific Association with "name"
 app.get("/associations/:name", function(req, res) {
