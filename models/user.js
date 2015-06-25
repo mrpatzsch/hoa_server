@@ -2,7 +2,6 @@ var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(10);
 var mongoose = require('mongoose');
 
-process.env.MONGOLAB_URI
 
 var violationSchema = new mongoose.Schema({
   violationInfo: String,

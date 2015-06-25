@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json'}));
 
-process.env.MONGOLAB_URI
+mongoose.connect(process.env.MONGOLAB_URI);
 
 // app.get('/protected',
 //   jwt({secret: 'shhhhhhared-secret'}),
