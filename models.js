@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/associations') || mongoose.connect(process.env.MONGOLAB_URI);
+mongoose.connect(process.env.MONGOLAB_URI) || mongoose.connect('mongodb://localhost/associations');
 
 var violationSchema = new mongoose.Schema({
   violationInfo: String,
