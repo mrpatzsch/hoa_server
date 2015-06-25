@@ -79,6 +79,15 @@ app.post("/login", function(req, res) {
     });
 });
 
+app.post("/association/new", function(req, res) {
+  var associationName = req.body;
+  users.associations.create({name: associationName});
+    users.save(function(err) {
+      if (err) return res.send(err)
+      console.log("Success!");
+        res.send(users.associations);
+    });
+});
 
 //Get Associations List 
 app.get("/associations", function(req, res) {
