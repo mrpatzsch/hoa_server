@@ -9,9 +9,6 @@ var express = require('express'),
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json'}));
-
-mongoose.connect(process.env.MONGOLAB_URI)
-
 // app.get('/protected',
 //   jwt({secret: 'shhhhhhared-secret'}),
 //   function(req, res) {
